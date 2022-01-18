@@ -33,19 +33,21 @@ class WorkerMessageEventSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->logger->error('[MESSENGER] Loopable detected');
-
         $this->logger->debug('[MESSENGER] Loopable detected');
 
         $message = clone $message;
-        $message?->onLoopIterationHandled();
-        $delayInSec = $message?->getLoopDelayInSec() ?? 0.01;
+        $delayInSec = 0.01;
+        if ($message instanceof CustomLoopableInterface) {
+            $message->onLoopIterationHandled();
+            if ($message->shouldLoopBeStopped()) {
+                $this->logger->debug('[MESSENGER] FINISH LOOP');
 
-        if ($message?->shouldLoopBeStopped()) {
-            $this->logger->debug('[MESSENGER] FINISH LOOP');
+                return;
+            }
 
-            return;
+            $delayInSec = $message->getLoopDelayInSec();
         }
+
 
         $this->logger->debug('[MESSENGER] Dispatch loop message', [
             'delay' => $delayInSec,
