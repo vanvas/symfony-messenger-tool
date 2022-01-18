@@ -24,7 +24,7 @@ class LockableMiddleware implements MiddlewareInterface
             return $stack->next()->handle($envelope, $stack);
         }
 
-        $lock = $this->lockFactory->createLock('messenger.lock.' . $message->getLockKey(), 86400);
+        $lock = $this->lockFactory->createLock('messenger.lock.' . $message->getLockKey(), $message->getLockTtl());
         if ($lock->acquire()) {
             return $stack->next()->handle($envelope, $stack);
         }
