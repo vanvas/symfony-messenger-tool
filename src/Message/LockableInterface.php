@@ -6,7 +6,13 @@ namespace Vim\MessengerTool\Message;
 
 interface LockableInterface
 {
+    /**
+     * The resource to lock
+     */
     public function getLockKey(): string;
 
-    public function getLockTtl(): ?float;
+    /**
+     * Maximum expected lock duration in seconds
+     */
+    public function getLockTtlInSeconds(): ?float;
 }
